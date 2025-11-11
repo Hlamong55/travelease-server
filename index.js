@@ -1,6 +1,6 @@
 const express = require("express");
 require("dotenv").config();
-const { MongoClient, ServerApiVersion } = require("mongodb");
+const { MongoClient, ServerApiVersion, ObjectId } = require("mongodb");
 const cors = require("cors");
 const app = express();
 const port = process.env.PORT || 3000;
@@ -38,7 +38,6 @@ async function run() {
     });
 
    
-
     app.get("/latest-vehicle", async (req, res) => {
       try {
         const cursor = await vehicleCollection
@@ -52,6 +51,14 @@ async function run() {
         res.status(500).send({ message: "Failed to load vehicles" });
       }
     });
+
+
+    app.get("/vehicles/:id", async(req,res) => {
+        const id = req.params.id;
+        const query = {_id: new ObjectId(id)};
+        const result = await vehicleCollection.findOne(query);
+        res.send(result);
+    })
 
 
 
