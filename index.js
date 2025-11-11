@@ -39,14 +39,14 @@ async function run() {
 
    
 
-    app.get("/vehicles/latest", async (req, res) => {
+    app.get("/latest-vehicle", async (req, res) => {
       try {
-        const vehicles = await vehicleCollection
+        const cursor = await vehicleCollection
           .find()
           .sort({ createdAt: -1 }) 
           .limit(6)
           .toArray();
-        res.send(vehicles);
+        res.send(cursor);
       } catch (error) {
         console.error(error);
         res.status(500).send({ message: "Failed to load vehicles" });
@@ -54,7 +54,7 @@ async function run() {
     });
 
 
-    
+
 
     await client.db("admin").command({ ping: 1 });
     console.log(
