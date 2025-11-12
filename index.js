@@ -30,6 +30,8 @@ async function run() {
     const db = client.db("travelease");
     const vehicleCollection = db.collection("vehicles");
 
+
+
     // vehicle releted APIs
     app.get("/vehicles", async (req, res) => {
       const cursor = vehicleCollection.find();
@@ -37,12 +39,13 @@ async function run() {
       res.send(result);
     });
 
-   
+
+
     app.get("/latest-vehicle", async (req, res) => {
       try {
         const cursor = await vehicleCollection
           .find()
-          .sort({ createdAt: -1 }) 
+          .sort({ createdAt: -1 })
           .limit(6)
           .toArray();
         res.send(cursor);
@@ -53,20 +56,41 @@ async function run() {
     });
 
 
-    app.get("/vehicles/:id", async(req,res) => {
-        const id = req.params.id;
-        const query = {_id: new ObjectId(id)};
-        const result = await vehicleCollection.findOne(query);
-        res.send(result);
-    })
+
+    app.get("/vehicles/:id", async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: new ObjectId(id) };
+      const result = await vehicleCollection.findOne(query);
+      res.send(result);
+    });
 
 
 
     app.post("/vehicles", async (req, res) => {
-        const vehicleData = req.body;
-        const result = await vehicleCollection.insertOne(vehicleData);
-        res.send(result);
-    })
+      const vehicleData = req.body;
+      const result = await vehicleCollection.insertOne(vehicleData);
+      res.send(result);
+    });
+
+
+
+    app.get("/vehicles/user/:email", async (req, res) => {
+      const email = req.params.email;
+      const query = { userEmail: email };
+      const result = await vehicleCollection.find(query).toArray();
+      res.send(result);
+    });
+
+
+
+    app.delete("/vehicles/:id", async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: new ObjectId(id) };
+      const result = await vehicleCollection.deleteOne(query);
+      res.send(result);
+    });
+
+
 
 
 
