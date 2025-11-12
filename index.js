@@ -62,6 +62,14 @@ async function run() {
 
 
 
+    app.post("/vehicles", async (req, res) => {
+        const vehicleData = req.body;
+        const result = await vehicleCollection.insertOne(vehicleData);
+        res.send(result);
+    })
+
+
+
 
     await client.db("admin").command({ ping: 1 });
     console.log(
