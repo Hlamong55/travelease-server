@@ -29,6 +29,7 @@ async function run() {
 
     const db = client.db("travelease");
     const vehicleCollection = db.collection("vehicles");
+    const bookingCollection = db.collection("bookings");
 
     // vehicle releted APIs
     app.get("/vehicles", async (req, res) => {
@@ -36,8 +37,6 @@ async function run() {
       const result = await cursor.toArray();
       res.send(result);
     });
-
-
 
     app.get("/latest-vehicle", async (req, res) => {
       try {
@@ -53,9 +52,6 @@ async function run() {
       }
     });
 
-
-
-
     app.get("/vehicles/:id", async (req, res) => {
       const id = req.params.id;
       const query = { _id: new ObjectId(id) };
@@ -63,16 +59,11 @@ async function run() {
       res.send(result);
     });
 
-
-
     app.post("/vehicles", async (req, res) => {
       const vehicleData = req.body;
       const result = await vehicleCollection.insertOne(vehicleData);
       res.send(result);
     });
-
-
-
 
     app.get("/vehicles/user/:email", async (req, res) => {
       const email = req.params.email;
@@ -81,9 +72,6 @@ async function run() {
       res.send(result);
     });
 
-
-
-
     app.delete("/vehicles/:id", async (req, res) => {
       const id = req.params.id;
       const query = { _id: new ObjectId(id) };
@@ -91,22 +79,63 @@ async function run() {
       res.send(result);
     });
 
-
-
-
     app.put("/vehicles/:id", async (req, res) => {
-  try {
-    const id = req.params.id;
-    const updatedData = req.body;
-    const query = { _id: new ObjectId(id) };
-    const updateVehicle = { $set: updatedData };
-    const result = await vehicleCollection.updateOne(query, updateVehicle);
-    res.send(result);
-  } catch (error) {
-    console.error("Update Error:", error);
-    res.status(500).send({ message: "Update failed", error });
-  }
-});
+      try {
+        const id = req.params.id;
+        const updatedData = req.body;
+        const query = { _id: new ObjectId(id) };
+        const updateVehicle = { $set: updatedData };
+        const result = await vehicleCollection.updateOne(query, updateVehicle);
+        res.send(result);
+      } catch (error) {
+        console.error("Update Error:", error);
+        res.status(500).send({ message: "Update failed", error });
+      }
+    });
+
+
+
+    app.patch("/vehicles/:id", async(req, res) => {
+            const id = req.params.id;
+            const updatedProduct = req.body;
+            const query = { _id: new ObjectId(id)};
+            const update = {
+                $set: updatedProduct       
+            };
+            const result = await vehicleCollection.updateOne(query, update);
+            res.send(result);
+        })
+
+
+
+
+
+    // booking related api
+    app.post("/bookings", async (req, res) => {
+      const booking = req.body;
+      if (!booking.bookingDate) booking.bookingDate = new Date();
+      const result = await bookingCollection.insertOne(booking);
+      res.send(result);
+    });
+
+
+
+    app.get("/bookings", async (req, res) => {
+      const email = req.query.email;
+      const query = email ? { userEmail: email } : {};
+      const result = await bookingCollection.find(query).toArray();
+      res.send(result);
+    });
+
+
+
+    app.delete("/bookings/:id", async(req, res) => {
+      const id = req.params.id;
+      const query = { _id: new ObjectId(id) };
+      const result = await bookingCollection.deleteOne(query);
+      res.send(result);
+    })
+
 
 
 
