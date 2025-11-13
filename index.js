@@ -30,8 +30,6 @@ async function run() {
     const db = client.db("travelease");
     const vehicleCollection = db.collection("vehicles");
 
-
-
     // vehicle releted APIs
     app.get("/vehicles", async (req, res) => {
       const cursor = vehicleCollection.find();
@@ -57,6 +55,7 @@ async function run() {
 
 
 
+
     app.get("/vehicles/:id", async (req, res) => {
       const id = req.params.id;
       const query = { _id: new ObjectId(id) };
@@ -74,12 +73,14 @@ async function run() {
 
 
 
+
     app.get("/vehicles/user/:email", async (req, res) => {
       const email = req.params.email;
       const query = { userEmail: email };
       const result = await vehicleCollection.find(query).toArray();
       res.send(result);
     });
+
 
 
 
@@ -91,6 +92,21 @@ async function run() {
     });
 
 
+
+
+    app.put("/vehicles/:id", async (req, res) => {
+  try {
+    const id = req.params.id;
+    const updatedData = req.body;
+    const query = { _id: new ObjectId(id) };
+    const updateVehicle = { $set: updatedData };
+    const result = await vehicleCollection.updateOne(query, updateVehicle);
+    res.send(result);
+  } catch (error) {
+    console.error("Update Error:", error);
+    res.status(500).send({ message: "Update failed", error });
+  }
+});
 
 
 
