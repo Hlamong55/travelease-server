@@ -43,7 +43,7 @@ async function run() {
         const cursor = await vehicleCollection
           .find()
           .sort({ createdAt: -1 })
-          .limit(6)
+          .limit(8)
           .toArray();
         res.send(cursor);
       } catch (error) {
