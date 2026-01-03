@@ -33,9 +33,20 @@ async function run() {
 
     // vehicle releted APIs
     app.get("/vehicles", async (req, res) => {
-      const cursor = vehicleCollection.find();
-      const result = await cursor.toArray();
-      res.send(result);
+      const page = parseInt(req.query.page) || 1;
+      const limit = parseInt(req.query.limit) || 12;
+      const skip = (page - 1) * limit;
+      const vehicles = await vehicleCollection
+        .find()
+        .skip(skip)
+        .limit(limit)
+        .toArray();
+
+      const total = await vehicleCollection.countDocuments();
+      res.send({
+        vehicles,
+        total,
+      });
     });
 
     app.get("/latest-vehicle", async (req, res) => {
@@ -93,22 +104,16 @@ async function run() {
       }
     });
 
-
-
-    app.patch("/vehicles/:id", async(req, res) => {
-            const id = req.params.id;
-            const updatedProduct = req.body;
-            const query = { _id: new ObjectId(id)};
-            const update = {
-                $set: updatedProduct       
-            };
-            const result = await vehicleCollection.updateOne(query, update);
-            res.send(result);
-        })
-
-
-
-
+    app.patch("/vehicles/:id", async (req, res) => {
+      const id = req.params.id;
+      const updatedProduct = req.body;
+      const query = { _id: new ObjectId(id) };
+      const update = {
+        $set: updatedProduct,
+      };
+      const result = await vehicleCollection.updateOne(query, update);
+      res.send(result);
+    });
 
     // booking related api
     app.post("/bookings", async (req, res) => {
@@ -118,8 +123,6 @@ async function run() {
       res.send(result);
     });
 
-
-
     app.get("/bookings", async (req, res) => {
       const email = req.query.email;
       const query = email ? { userEmail: email } : {};
@@ -127,18 +130,12 @@ async function run() {
       res.send(result);
     });
 
-
-
-    app.delete("/bookings/:id", async(req, res) => {
+    app.delete("/bookings/:id", async (req, res) => {
       const id = req.params.id;
       const query = { _id: new ObjectId(id) };
       const result = await bookingCollection.deleteOne(query);
       res.send(result);
-    })
-
-
-
-
+    });
 
     // await client.db("admin").command({ ping: 1 });
     console.log(
