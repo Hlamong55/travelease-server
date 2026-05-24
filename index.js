@@ -115,6 +115,19 @@ async function run() {
       res.send(result);
     });
 
+    app.get("/vehicle-locations", async (req, res) => {
+  try {
+
+    const locations = await vehicleCollection.distinct("location");
+
+    res.send(locations);
+
+  } catch (error) {
+    console.log(error);
+    res.status(500).send({ message: "Failed to fetch locations" });
+  }
+    });
+
     // booking related api
     app.post("/bookings", async (req, res) => {
       const booking = req.body;
